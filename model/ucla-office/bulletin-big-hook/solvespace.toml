@@ -1,0 +1,10 @@
+source = 'bulletin-big-hook.slvs'
+
+[profile.backpack]
+constraint.0x69.valA = 25.0
+
+[profile.tote]
+constraint.0x69.valA = 35.0
+
+[profile.helmet]
+constraint.0x69.valA = 20.0
