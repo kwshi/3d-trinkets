@@ -1,121 +1,163 @@
+# pyright: strict
 import enum
 import typing
 import dataclasses as dc
+import abc
 
 
 # https://github.com/solvespace/solvespace/blob/e7c0c1665f1684bb3195107147aaf254c852fa44/src/file.cpp#L212
 class Tag(enum.Enum):
-    ENTITY_MAP = "M"
-    STR = "S"
-    PATH = "P"
-    BOOL = "b"
-    COLOR = "c"
-    INT = "d"
-    FLOAT = "f"
-    HEX = "x"
+    ENTITY_MAP = b"M"
+    STR = b"S"
+    PATH = b"P"
+    BOOL = b"b"
+    COLOR = b"c"
+    INT = b"d"
+    FLOAT = b"f"
+    HEX = b"x"
     # https://github.com/solvespace/solvespace/blob/e7c0c1665f1684bb3195107147aaf254c852fa44/src/file.cpp#L456
-    IGNORE = "i"
+    IGNORE = b"i"
+
+
+class Value(abc.ABC):
+    @abc.abstractmethod
+    def serialize(self, out: typing.BinaryIO, /) -> None:
+        ...
+
+    @classmethod
+    @abc.abstractmethod
+    def parse(cls, first_line: bytes, lines: typing.Iterator[bytes], /) -> typing.Self:
+        ...
 
 
 @dc.dataclass
-class Hex:
+class Hex(Value):
     value: int
 
-    def serialize(self):
-        return f"{self.value:08x}"
+    def serialize(self, out: typing.BinaryIO):
+        out.write(f"{self.value:08x}".encode())
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(int(first_line, 16))
 
 
 @dc.dataclass
-class Int:
+class Int(Value):
     value: int
 
-    def serialize(self):
-        return f"{self.value}"
+    def serialize(self, out: typing.BinaryIO):
+        out.write(f"{self.value}".encode())
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(int(first_line))
 
 
 @dc.dataclass
-class Str:
-    value: str
+class Str(Value):
+    value: bytes
 
-    def serialize(self):
-        return self.value
+    def serialize(self, out: typing.BinaryIO):
+        out.write(self.value)
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(first_line)
 
 
 @dc.dataclass
-class Float:
+class Float(Value):
     value: float
 
-    def serialize(self):
-        return f"{self.value}"
+    def serialize(self, out: typing.BinaryIO):
+        out.write(f"{self.value}".encode())
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(float(first_line))
 
 
 @dc.dataclass
-class Bool:
+class Bool(Value):
     value: bool
 
-    def serialize(self):
-        return f"{int(self.value)}"
+    def serialize(self, out: typing.BinaryIO):
+        out.write(f"{int(self.value)}".encode())
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(bool(int(first_line)))
 
 
 @dc.dataclass
-class Color:
+class Color(Value):
     value: int
 
-    def serialize(self):
-        return f"{self.value:08x}"
+    def serialize(self, out: typing.BinaryIO):
+        out.write(f"{self.value:08x}".encode())
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(int(first_line, 16))
 
 
 @dc.dataclass
-class Path:
-    value: str
+class Path(Value):
+    value: bytes
 
-    def serialize(self):
-        return self.value
+    def serialize(self, out: typing.BinaryIO):
+        out.write(self.value)
+
+    @classmethod
+    def parse(cls, first_line: bytes, _: typing.Iterator[bytes]):
+        return cls(first_line)
 
 
 @dc.dataclass
-class EntityMap:
+class EntityMap(Value):
     # save file format:
     # `{` on first line,
     # then `%d %08x %d` for each item,
     # then `}` on single line
     data: list[tuple[int, int, int]]
 
-    def serialize(self):
-        return "{{\n{}\n}}".format(
-            "\n".join(f"{a} {b:08x} {c}" for a, b, c in self.data)
-        )
+    def serialize(self, out: typing.BinaryIO):
+        out.write(b"{\n")
+        for a, b, c in self.data:
+            out.write(f"{a} {b:08x} {c}\n".encode())
+        out.write(b"}")
+
+    @classmethod
+    def parse(cls, first_line: bytes, lines: typing.Iterator[bytes]):
+        assert first_line.rstrip() == b"{"
+        data: list[tuple[int, int, int]] = []
+        for line in lines:
+            if line.rstrip() == b"}":
+                break
+            a, b, c = line.split()
+            data.append((int(a), int(b, 16), int(c)))
+        return cls(data)
 
 
 @dc.dataclass
-class Ignore:
-    pass
+class Ignore(Value):
+    def serialize(self, _: typing.BinaryIO):
+        pass
+
+    @classmethod
+    def parse(cls, _first_line: bytes, _: typing.Iterator[bytes]):
+        return cls()
 
 
-Value = typing.Union[EntityMap, Str, Path, Bool, Color, Int, Float, Hex, Ignore]
-
-
-def parse_value(tag: Tag, first_line: bytes, lines: typing.BinaryIO) -> Value:
-    match tag:
-        case Tag.HEX:
-            return Hex(int(first_line, 16))
-        case Tag.INT:
-            return Int(int(first_line))
-        case Tag.STR:
-            return Str(first_line.decode())
-        case Tag.BOOL:
-            return Bool(bool(int(first_line)))
-        case Tag.FLOAT:
-            return Float(float(first_line))
-        case Tag.COLOR:
-            return Color(int(first_line, 16))
-        case Tag.ENTITY_MAP:
-            data: list[tuple[int, int, int]] = []
-            for line in lines:
-                if line.rstrip() == b"}":
-                    break
-                a, b, c = line.split()
-                data.append((int(a), int(b, 16), int(c)))
-            return EntityMap(data)
-        case _:
-            return Ignore()
+BY_TAG: dict[Tag, type[Value]] = {
+    Tag.HEX: Hex,
+    Tag.INT: Int,
+    Tag.STR: Str,
+    Tag.BOOL: Bool,
+    Tag.FLOAT: Float,
+    Tag.COLOR: Color,
+    Tag.ENTITY_MAP: EntityMap,
+    Tag.IGNORE: Ignore,
+    Tag.PATH: Path,
+}
