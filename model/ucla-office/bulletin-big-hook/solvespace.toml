@@ -1,10 +1,35 @@
 source = 'bulletin-big-hook.slvs'
 
+[parameter.hook-size]
+constraint = 0x69
+attribute = 'valA'
+
+[parameter.wall-thickness]
+constraint = 0x83
+attribute = 'valA'
+
+[parameter.base-thickness]
+constraint = 0x5d
+attribute = 'valA'
+
+[parameter.clip-thickness]
+constraint = 0x7a
+attribute = 'valA'
+
 [profile.backpack]
-constraint.0x69.valA = 25.0
+hook-size = 25.0
+wall-thickness = 8.0
+base-thickness = 16.0
+clip-thickness = 16.0
 
 [profile.tote]
-constraint.0x69.valA = 35.0
+hook-size = 35.0
+wall-thickness = 8.0
+base-thickness = 16.0
+clip-thickness = 16.0
 
 [profile.helmet]
-constraint.0x69.valA = 20.0
+hook-size = 20.0
+wall-thickness = 6.0
+base-thickness = 8.0
+clip-thickness = 8.0
