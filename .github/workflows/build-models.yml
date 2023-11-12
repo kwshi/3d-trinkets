@@ -1,4 +1,6 @@
 name: 'build-models'
+on:
+  - 'push'
 jobs:
   build-solvespace:
     runs-on: 'ubuntu-latest'
