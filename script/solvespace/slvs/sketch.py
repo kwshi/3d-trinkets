@@ -1,6 +1,6 @@
 # pyright: strict
 import typing
-
+import dataclasses as dc
 
 from . import subject as slvs_subject
 from . import format as slvs_format
@@ -36,21 +36,14 @@ _IGNORE_INSTRUCTION = {
 }
 
 
+@dc.dataclass
 class Sketch:
-    groups: dict[int, slvs_record.Record]
-    params: dict[int, slvs_record.Record]
-    entities: dict[int, slvs_record.Record]
-    constraints: dict[int, slvs_record.Record]
-    requests: dict[int, slvs_record.Record]
-    styles: dict[int, slvs_record.Record]
-
-    def __init__(self):
-        self.groups = {}
-        self.params = {}
-        self.entities = {}
-        self.constraints = {}
-        self.requests = {}
-        self.styles = {}
+    groups: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
+    params: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
+    entities: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
+    constraints: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
+    requests: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
+    styles: dict[int, slvs_record.Record] = dc.field(default_factory=dict, kw_only=True)
 
     def by_subject_tag(self):
         return {

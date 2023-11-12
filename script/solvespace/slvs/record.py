@@ -11,6 +11,13 @@ class Record:
     id: int
     data: dict[bytes, slvs_value.Value]
 
+    def replace(self, key: bytes, value: slvs_value.Value):
+        original = self.data[key]
+        if type(value) != type(original):
+            raise TypeError(f'original {original}: {type(original)}; replacement {value}: {type(value)}')
+
+        return Record(self.id, {**self.data, key: value})
+
     def serialize(self, subject: slvs_subject.Tag, out: typing.BinaryIO):
         for key, value in self.data.items():
             out.write(subject.value)

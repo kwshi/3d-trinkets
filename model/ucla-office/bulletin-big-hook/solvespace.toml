@@ -2,19 +2,15 @@ source = 'bulletin-big-hook.slvs'
 
 [parameter.hook-size]
 constraint = 0x69
-attribute = 'valA'
 
 [parameter.wall-thickness]
 constraint = 0x83
-attribute = 'valA'
 
 [parameter.base-thickness]
 constraint = 0x5d
-attribute = 'valA'
 
 [parameter.clip-thickness]
 constraint = 0x7a
-attribute = 'valA'
 
 [profile.backpack]
 hook-size = 25.0
