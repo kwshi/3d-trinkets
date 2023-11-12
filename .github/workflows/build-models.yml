@@ -1,0 +1,9 @@
+name: 'build-models'
+jobs:
+  build-solvespace:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v4'
+      - name: 'python version'
+        run: |
+          python3.12 --version
