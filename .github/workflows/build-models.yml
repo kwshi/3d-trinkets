@@ -1,32 +1,61 @@
-name: 'build-models'
+name: "build-models"
 on:
-  - 'push'
+  - "push"
 jobs:
+  setup-solvespace:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          repository: "solvespace/solvespace"
+          ref: "v3.1"
+      # https://github.com/solvespace/solvespace#building-for-linux
+      - run: |
+          sudo apt-get install \
+            git build-essential cmake zlib1g-dev libpng-dev \
+            libcairo2-dev libfreetype6-dev libjson-c-dev \
+            libfontconfig1-dev libgtkmm-3.0-dev libpangomm-1.4-dev \
+            libgl-dev libglu-dev libspnav-dev
+          cmake -B 'build' \
+            -D'CMAKE_BUILD_TYPE=Release' \
+            -D'ENABLE_OPENMP=ON' \
+            -D'ENABLE_GUI=OFF'
+          make -C 'build'
+      - uses: "actions/upload-artifact@v3"
+        with:
+          name: "solvespace"
+          path: "build/bin/solvespace-cli"
+
   build-solvespace:
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     strategy:
       matrix:
         model:
-          - 'bulletin-tray'
+          - "bulletin-tray"
+    needs: "setup-solvespace"
     steps:
-      - uses: 'actions/checkout@v4'
-      - uses: 'actions/setup-python@v4'
+      - uses: "actions/checkout@v4"
+      - uses: "actions/setup-python@v4"
         with:
-          python-version: '3.12'
-      - name: 'install solvespace'
+          python-version: "3.12"
+      - name: "install solvespace"
+        uses: "actions/download-artifact@v3"
+        with:
+          name: "solvespace"
+          path: "/usr/local/bin/solvespace-cli"
+      - name: "solvespace version"
         run: |
-          sudo snap install 'solvespace'
           solvespace-cli version
-      - name: 'build'
+      - name: "build"
         env:
-          SOLVESPACE_MODEL: '${{ matrix.model }}'
+          SOLVESPACE_MODEL: "${{ matrix.model }}"
         run: |
           python -m 'script.solvespace' "model/$SOLVESPACE_MODEL"
-      - name: 'release'
-        uses: 'marvinpinto/action-automatic-releases@latest'
+      - name: "release"
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          automatic_release_tag: 'latest'
-          prerelease: true
-          repo_token: '${{ github.token }}'
+          automatic_release_tag: "latest"
+          prerelease: false
+          repo_token: "${{ github.token }}"
           files: |
             **/*.stl
