@@ -66,6 +66,7 @@ jobs:
           echo '/opt/solvespace/bin' >> "$GITHUB_PATH"
       - name: "solvespace version"
         run: |
+          echo "$PATH"
           solvespace-cli version
       - name: "build"
         env:
