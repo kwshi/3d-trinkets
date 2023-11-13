@@ -33,7 +33,7 @@ jobs:
             -D'ENABLE_GUI=OFF'
           make -C 'build'
       - if: "steps.cache.outputs.cache-hit != true"
-        uses: actions/cache/save@v3'
+        uses: "actions/cache/save@v3"
         with:
           key: "solvespace-cli-v3.1"
           path: "build/bin/solvespace-cli"
@@ -62,6 +62,7 @@ jobs:
       - name: "solvespace version"
         run: |
           ls -lh /usr/local/bin/solvespace-cli
+          sudo chmod +x '/usr/local/bin/solvespace-cli'
           solvespace-cli version
       - name: "build"
         env:
