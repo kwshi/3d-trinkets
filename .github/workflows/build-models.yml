@@ -58,17 +58,16 @@ jobs:
         uses: "actions/download-artifact@v3"
         with:
           name: "solvespace"
-          path: "/opt/solvespace/bin/solvespace-cli"
+          path: "/opt/solvespace/bin"
       - name: "install solvespace"
         run: |
+          ls -lhR '/opt/solvespace/bin'
           sudo chmod +x '/opt/solvespace/bin/solvespace-cli'
           # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
           echo '/opt/solvespace/bin' >> "$GITHUB_PATH"
       - name: "solvespace version"
         run: |
-          echo "$PATH"
-          ls -lh '/opt/solvespace/bin'
-          /opt/solvespace/bin/solvespace-cli version
+          solvespace-cli version
       - name: "build"
         env:
           SOLVESPACE_MODEL: "${{ matrix.model }}"
