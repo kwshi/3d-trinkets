@@ -11,7 +11,7 @@ jobs:
           path: "build/bin/solvespace-cli"
           key: "solvespace-cli-v3.1"
       - uses: "actions/checkout@v4"
-        if: "steps.cache.outputs.cache-hit != true"
+        if: "steps.cache.outputs.cache-hit != 'true'"
         with:
           repository: "solvespace/solvespace"
           ref: "v3.1"
@@ -20,7 +20,7 @@ jobs:
           # https://github.com/actions/checkout/issues/402
           fetch-depth: 0
       # https://github.com/solvespace/solvespace#building-for-linux
-      - if: "steps.cache.outputs.cache-hit != true"
+      - if: "steps.cache.outputs.cache-hit != 'true'"
         run: |
           sudo apt-get install \
             git build-essential cmake zlib1g-dev libpng-dev \
@@ -32,7 +32,7 @@ jobs:
             -D'ENABLE_OPENMP=ON' \
             -D'ENABLE_GUI=OFF'
           make -C 'build'
-      - if: "steps.cache.outputs.cache-hit != true"
+      - if: "steps.cache.outputs.cache-hit != 'true'"
         uses: "actions/cache/save@v3"
         with:
           key: "solvespace-cli-v3.1"
