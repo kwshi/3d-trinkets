@@ -61,13 +61,13 @@ jobs:
           path: "/opt/solvespace/bin"
       - name: "install solvespace"
         run: |
-          ls -lhR '/opt/solvespace/bin'
           sudo chmod +x '/opt/solvespace/bin/solvespace-cli'
           # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
           echo '/opt/solvespace/bin' >> "$GITHUB_PATH"
       - name: "solvespace version"
         run: |
-          solvespace-cli version
+          # for some incomprehensible reason, `solvespace-cli version` has exit code 1
+          solvespace-cli version || true
       - name: "build"
         env:
           SOLVESPACE_MODEL: "${{ matrix.model }}"
