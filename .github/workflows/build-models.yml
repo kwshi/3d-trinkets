@@ -10,6 +10,9 @@ jobs:
           repository: "solvespace/solvespace"
           ref: "v3.1"
           submodules: true
+          # I don't really understand this fix, but OK:
+          # https://github.com/actions/checkout/issues/402
+          fetch-depth: 0
       # https://github.com/solvespace/solvespace#building-for-linux
       - run: |
           sudo apt-get install \
