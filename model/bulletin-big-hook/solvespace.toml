@@ -10,7 +10,9 @@ constraint = 0x83
 constraint = 0x5d
 
 [parameter.clip-thickness]
-constraint = 0x7a
+constraint = 0x96
+
+# height: 77, width: 9a, default: 13.5
 
 [profile.backpack]
 hook-size = 25.0
