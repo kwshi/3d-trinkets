@@ -33,6 +33,7 @@ _IGNORE_INSTRUCTION = {
     b"Curve",
     b"CCtrl",
     b"CurvePt",
+    b"Triangle",
 }
 
 
