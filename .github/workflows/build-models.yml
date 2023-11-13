@@ -9,6 +9,7 @@ jobs:
         with:
           repository: "solvespace/solvespace"
           ref: "v3.1"
+          submodules: true
       # https://github.com/solvespace/solvespace#building-for-linux
       - run: |
           sudo apt-get install \
