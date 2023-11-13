@@ -44,11 +44,6 @@ jobs:
 
   build-solvespace:
     runs-on: "ubuntu-latest"
-    strategy:
-      matrix:
-        model:
-          - "bulletin-tray"
-          - "bulletin-top-hook"
     needs: "setup-solvespace"
     steps:
       - uses: "actions/checkout@v4"
@@ -70,10 +65,15 @@ jobs:
           # for some incomprehensible reason, `solvespace-cli version` has exit code 1
           solvespace-cli version || true
       - name: "build"
-        env:
-          SOLVESPACE_MODEL: "${{ matrix.model }}"
+        shell: "bash"
         run: |
-          python -m 'script.solvespace' "model/$SOLVESPACE_MODEL"
+          readarray -t models < <(find 'model' -type 'f' -name 'solvespace.toml')
+          for f in "${models[@]}"; do
+            dir="$(dirname "$f")"
+            echo "::group::$dir"
+            python -m 'script.solvespace' "$dir"
+            echo '::endgroup::'
+          done
       - name: "release"
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
