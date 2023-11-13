@@ -54,16 +54,18 @@ jobs:
       - uses: "actions/setup-python@v4"
         with:
           python-version: "3.12"
-      - name: "install solvespace"
+      - name: "download solvespace"
         uses: "actions/download-artifact@v3"
         with:
           name: "solvespace"
-          path: "/usr/local/bin/solvespace-cli"
+          path: "/opt/solvespace/bin/solvespace-cli"
+      - name: "install solvespace"
+        run: |
+          sudo chmod +x '/opt/solvespace/bin/solvespace-cli'
+          # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
+          echo '/opt/solvespace/bin' >> "$GITHUB_PATH"
       - name: "solvespace version"
         run: |
-          ls -lh /usr/local/bin/solvespace-cli
-          sudo chmod +x '/usr/local/bin/solvespace-cli'
-          echo "$PATH"
           solvespace-cli version
       - name: "build"
         env:
