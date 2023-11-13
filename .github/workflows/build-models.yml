@@ -15,7 +15,7 @@ jobs:
           python-version: '3.12'
       - name: 'install solvespace'
         run: |
-          apt install 'solvespace'
+          sudo apt-get install 'solvespace'
       - name: 'build'
         env:
           SOLVESPACE_MODEL: '${{ matrix.model }}'
