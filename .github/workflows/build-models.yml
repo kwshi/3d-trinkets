@@ -4,11 +4,25 @@ on:
 jobs:
   build-solvespace:
     runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        model:
+          - 'bulletin-tray'
     steps:
       - uses: 'actions/checkout@v4'
       - uses: 'actions/setup-python@v4'
         with:
           python-version: '3.12'
-      - name: 'python version'
+      - name: 'build'
+        env:
+          SOLVESPACE_MODEL: '${{ matrix.model }}'
         run: |
-          python --version
+          python -m 'script.solvespace' "model/$SOLVESPACE_MODEL"
+      - name: 'release
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          automatic_release_tag: 'latest'
+          prerelease: true
+          repo_token: '${{ github.token }}'
+          files: |
+            **/*.stl
