@@ -33,4 +33,8 @@ for name, sketch in config.apply(sketch_base).items():
     with open(out_path, "wb") as out:
         sketch.serialize(out)
 
-sp.call(["solvespace-cli", "export-mesh", "--output", "%.stl", source_path, *out_paths])
+paths = [source_path, *out_paths]
+
+sp.call(
+    ["solvespace-cli", "export-mesh", "--output", "%.stl", *map(os.path.abspath, paths)]
+)

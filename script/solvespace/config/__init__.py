@@ -72,7 +72,7 @@ class Config:
             assert value is not None
             constraints[parameter.constraint] = constraints[
                 parameter.constraint
-            ].replace(parameter.key, slvs_value.Float(value))
+            ].replace_float(parameter.key, value)
         return dc.replace(sketch, constraints=constraints)
 
     def apply(self, sketch: slvs_sketch.Sketch):

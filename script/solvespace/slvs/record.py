@@ -1,6 +1,7 @@
 # pyright: strict
 import typing
 import dataclasses as dc
+import math
 
 from . import format as slvs_value
 from . import subject as slvs_subject
@@ -11,12 +12,15 @@ class Record:
     id: int
     data: dict[bytes, slvs_value.Value]
 
-    def replace(self, key: bytes, value: slvs_value.Value):
+    def replace_float(self, key: bytes, value: float):
         original = self.data[key]
-        if type(value) != type(original):
-            raise TypeError(f'original {original}: {type(original)}; replacement {value}: {type(value)}')
+        if not isinstance(original, slvs_value.Float):
+            raise TypeError(f"trying to replace a non-float value at {key}: {original}")
 
-        return Record(self.id, {**self.data, key: value})
+        return Record(
+            self.id,
+            {**self.data, key: slvs_value.Float(math.copysign(value, original.value))},
+        )
 
     def serialize(self, subject: slvs_subject.Tag, out: typing.BinaryIO):
         for key, value in self.data.items():
