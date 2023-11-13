@@ -16,6 +16,7 @@ jobs:
       - name: 'install solvespace'
         run: |
           sudo apt-get install 'solvespace'
+          solvespace-cli version
       - name: 'build'
         env:
           SOLVESPACE_MODEL: '${{ matrix.model }}'
