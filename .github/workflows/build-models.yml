@@ -48,6 +48,7 @@ jobs:
       matrix:
         model:
           - "bulletin-tray"
+          - "bulletin-top-hook"
     needs: "setup-solvespace"
     steps:
       - uses: "actions/checkout@v4"
