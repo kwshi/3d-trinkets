@@ -14,11 +14,11 @@ constraint = 0x96
 
 [parameter.clip-width]
 constraint = 0x9a
-default = 19
+default = 19.0
 
 [parameter.clip-height]
 constraint = 0x77
-default = 19
+default = 19.0
 
 [profile.backpack]
 hook-size = 25.0
