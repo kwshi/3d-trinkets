@@ -67,6 +67,7 @@ jobs:
       - name: "solvespace version"
         run: |
           echo "$PATH"
+          ls -lh '/opt/solvespace/bin'
           solvespace-cli version
       - name: "build"
         env:
