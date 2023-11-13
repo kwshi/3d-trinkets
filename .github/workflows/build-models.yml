@@ -63,6 +63,7 @@ jobs:
         run: |
           ls -lh /usr/local/bin/solvespace-cli
           sudo chmod +x '/usr/local/bin/solvespace-cli'
+          echo "$PATH"
           solvespace-cli version
       - name: "build"
         env:
