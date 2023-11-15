@@ -1,0 +1,28 @@
+source = 'tower-of-hanoi.scad'
+
+[parameter.base_spacing]
+default = 3
+[parameter.base_thickness]
+default = 6
+[parameter.base_chamfer_top]
+default = 2
+[parameter.base_chamfer_bottom]
+default = 1
+[parameter.pillar_radius]
+default = 4
+[parameter.pillar_gap]
+default = 0.5
+[parameter.pillar_chamfer]
+default = 1
+[parameter.layout_spacing]
+default = 3
+[parameter.disk_radii]
+default = [9, 12, 15, 18, 21, 24]
+[parameter.disk_thickness]
+default = 4
+[parameter.disk_gap]
+default = 0.5
+[parameter.disk_chamfer]
+default = 1
+
+[profile.6]
