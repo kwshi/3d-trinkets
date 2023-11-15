@@ -1,8 +1,8 @@
-base_spacing = 4;
-base_thickness = 8;
+base_spacing = 3;
+base_thickness = 6;
 base_chamfer_top = 2;
 base_chamfer_bottom = 1;
-pillar_radius = 4;
+pillar_radius = 3;
 pillar_gap = .5;
 pillar_chamfer = 1;
 layout_spacing = 3;
