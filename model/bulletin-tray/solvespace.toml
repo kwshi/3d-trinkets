@@ -1,3 +1,19 @@
 source = 'bulletin-tray.slvs'
 
+[parameter.tray-width]
+constraint = 0x28
+[parameter.tray-depth]
+constraint = 0x24
+[parameter.tray-height]
+constraint = 0x1c6
+[parameter.back-height]
+constraint = 0x88
+[parameter.pin-diameter]
+constraint = 0x125
+default = 1.5
+
 [profile.earbud-tray]
+tray-width = 40.0
+tray-depth = 25.0
+tray-height = 5.0
+back-height = 40.0
