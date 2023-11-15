@@ -39,8 +39,32 @@ jobs:
           path: "build/bin/solvespace-cli"
       - uses: "actions/upload-artifact@v3"
         with:
-          name: "solvespace"
+          name: "solvespace-cli"
           path: "build/bin/solvespace-cli"
+
+
+  build-openscad:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v4'
+      - run: |
+          sudo apt-get install 'openscad'
+      - run: |
+          openscad version
+      - name: 'build'
+        shell: 'bash'
+        run: |
+          readarray -t models < <(find 'model' -type 'f' -name 'openscad.toml')
+          for f in "${models[@]}"; do
+            dir="$(dirname "$f")"
+            echo "::group::$dir"
+            python -m 'script.openscad' "$dir"
+            echo '::endgroup::'
+          done
+      - uses: 'actions/upload-artifact@v3'
+        with:
+          name: 'model-openscad'
+          path: 'model/**/*.stl'
 
   build-solvespace:
     runs-on: "ubuntu-latest"
@@ -74,6 +98,19 @@ jobs:
             python -m 'script.solvespace' "$dir"
             echo '::endgroup::'
           done
+      - uses: 'actions/upload-artifact@v3'
+        with:
+          name: 'model-solvespace'
+          path: 'model/**/*.stl'
+
+  release:
+    steps:
+      - name: 'actions/download-artifact@v3'
+        with:
+          name: 'model-openscad'
+      - name: 'actions/download-artifact@v3'
+        with:
+          name: 'model-solvespace'
       - name: "release"
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
