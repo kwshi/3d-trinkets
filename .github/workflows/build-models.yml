@@ -50,7 +50,7 @@ jobs:
       - run: |
           sudo apt-get install 'openscad'
       - run: |
-          openscad version
+          openscad -v
       - name: 'build'
         shell: 'bash'
         run: |
