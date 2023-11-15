@@ -34,6 +34,6 @@ clip-thickness = 16.0
 
 [profile.helmet]
 hook-size = 20.0
-wall-thickness = 6.0
+wall-thickness = 4.0
 base-thickness = 8.0
 clip-thickness = 8.0
