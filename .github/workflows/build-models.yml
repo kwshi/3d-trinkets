@@ -77,7 +77,7 @@ jobs:
       - name: "download solvespace"
         uses: "actions/download-artifact@v3"
         with:
-          name: "solvespace"
+          name: "solvespace-cli"
           path: "/opt/solvespace/bin"
       - name: "install solvespace"
         run: |
