@@ -104,11 +104,12 @@ jobs:
           path: 'model/**/*.stl'
 
   release:
+    runs-on: 'ubuntu-latest'
     steps:
-      - name: 'actions/download-artifact@v3'
+      - uses: 'actions/download-artifact@v3'
         with:
           name: 'model-openscad'
-      - name: 'actions/download-artifact@v3'
+      - uses: 'actions/download-artifact@v3'
         with:
           name: 'model-solvespace'
       - name: "release"
