@@ -1,0 +1,46 @@
+source = 'bulletin-top-hook.slvs'
+
+[parameter.hook-width]
+constraint = 0xac
+
+[parameter.hook-height-back]
+constraint = 0xb5
+default = 25.0
+
+[parameter.hook-height-front]
+constraint = 0xad
+default = 5.0
+
+[parameter.hook-thickness]
+constraint = 0x83
+default = 6.0
+
+[parameter.base-thickness]
+constraint = 0x5d
+default = 16.0
+
+[parameter.clip-thickness]
+constraint = 0x96
+default = 16.0
+
+[parameter.clip-width]
+constraint = 0x9a
+default = 19.0
+
+[parameter.clip-height]
+constraint = 0x77
+default = 19.0
+
+[profile.backpack]
+hook-width = 25.0
+hook-height-back = 25.0
+hook-height-front = 10.0
+
+[profile.tote]
+hook-width = 35.0
+
+[profile.helmet]
+hook-width = 25.0
+clip-thickness = 8.0
+hook-thickness = 4.0
+base-thickness = 8.0

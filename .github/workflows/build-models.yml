@@ -1,32 +1,84 @@
-name: 'build-models'
+name: "build-models"
 on:
-  - 'push'
+  - "push"
 jobs:
-  build-solvespace:
-    runs-on: 'ubuntu-latest'
-    strategy:
-      matrix:
-        model:
-          - 'bulletin-tray'
+  setup-solvespace:
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: 'actions/checkout@v4'
-      - uses: 'actions/setup-python@v4'
+      - id: "cache"
+        uses: "actions/cache/restore@v3"
         with:
-          python-version: '3.12'
-      - name: 'install solvespace'
-        run: |
-          sudo snap install 'solvespace'
-          solvespace-cli version
-      - name: 'build'
-        env:
-          SOLVESPACE_MODEL: '${{ matrix.model }}'
-        run: |
-          python -m 'script.solvespace' "model/$SOLVESPACE_MODEL"
-      - name: 'release'
-        uses: 'marvinpinto/action-automatic-releases@latest'
+          path: "build/bin/solvespace-cli"
+          key: "solvespace-cli-v3.1"
+      - uses: "actions/checkout@v4"
+        if: "steps.cache.outputs.cache-hit != 'true'"
         with:
-          automatic_release_tag: 'latest'
-          prerelease: true
-          repo_token: '${{ github.token }}'
+          repository: "solvespace/solvespace"
+          ref: "v3.1"
+          submodules: true
+          # I don't really understand this fix, but OK:
+          # https://github.com/actions/checkout/issues/402
+          fetch-depth: 0
+      # https://github.com/solvespace/solvespace#building-for-linux
+      - if: "steps.cache.outputs.cache-hit != 'true'"
+        run: |
+          sudo apt-get install \
+            git build-essential cmake zlib1g-dev libpng-dev \
+            libcairo2-dev libfreetype6-dev libjson-c-dev \
+            libfontconfig1-dev libgtkmm-3.0-dev libpangomm-1.4-dev \
+            libgl-dev libglu-dev libspnav-dev
+          cmake -B 'build' \
+            -D'CMAKE_BUILD_TYPE=Release' \
+            -D'ENABLE_OPENMP=ON' \
+            -D'ENABLE_GUI=OFF'
+          make -C 'build'
+      - if: "steps.cache.outputs.cache-hit != 'true'"
+        uses: "actions/cache/save@v3"
+        with:
+          key: "solvespace-cli-v3.1"
+          path: "build/bin/solvespace-cli"
+      - uses: "actions/upload-artifact@v3"
+        with:
+          name: "solvespace"
+          path: "build/bin/solvespace-cli"
+
+  build-solvespace:
+    runs-on: "ubuntu-latest"
+    needs: "setup-solvespace"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "actions/setup-python@v4"
+        with:
+          python-version: "3.12"
+      - name: "download solvespace"
+        uses: "actions/download-artifact@v3"
+        with:
+          name: "solvespace"
+          path: "/opt/solvespace/bin"
+      - name: "install solvespace"
+        run: |
+          sudo chmod +x '/opt/solvespace/bin/solvespace-cli'
+          # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
+          echo '/opt/solvespace/bin' >> "$GITHUB_PATH"
+      - name: "solvespace version"
+        run: |
+          # for some incomprehensible reason, `solvespace-cli version` has exit code 1
+          solvespace-cli version || true
+      - name: "build"
+        shell: "bash"
+        run: |
+          readarray -t models < <(find 'model' -type 'f' -name 'solvespace.toml')
+          for f in "${models[@]}"; do
+            dir="$(dirname "$f")"
+            echo "::group::$dir"
+            python -m 'script.solvespace' "$dir"
+            echo '::endgroup::'
+          done
+      - name: "release"
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          automatic_release_tag: "latest"
+          prerelease: false
+          repo_token: "${{ github.token }}"
           files: |
             **/*.stl
